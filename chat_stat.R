@@ -31,7 +31,7 @@
   if( is.null(params$mindate)) {
     mindate <- make_date( 2019, 1,1 )
   } else {
-    mindate <- params$mindate
+    mindate <- as.Date(params$mindate)
   }
   
   dt.data <- tg_data_json2df(json1, mindate)

@@ -119,7 +119,6 @@
   plot(lst.dc$stl)
   dgg1 <- lst.dc$dcdt1
   
-  #dgg1[ , wd := fct_reorder(wd, seq_along(wd), .desc=FALSE)]
   dgg1[ wd1 == 0 , wd1 := 7 ] #sunday -> 7 
   
   dgg1[ , wd := fct_reorder(wd, wd1, .desc=FALSE)]
@@ -146,27 +145,15 @@
   dt.data.new.era <- dt.data[ date >= last_period_start]
   dt.stat.new.era <- stat_msg_by_user( dt.data.new.era )
   
-  # dt.stat.new.era <- dt.data.new.era[, .(from=last(from), n_messages= .N, n_chars = sum(nchar(text)), 
-  #                        fisrt_msg_date=min(as.Date(date)), last_msg_date= max(as.Date(date))), by=from_id]
-  # 
-  # setorderv( dt.stat.new.era, c("n_messages"), order=-1)
-  # dt.stat.new.era[ , share_nmsg := n_messages/sum(n_messages)]
-  
   print(paste0( "Top 20 flooders - from ", last_period_start))
   head( dt.stat.new.era[, .(from, n_messages, n_chars, share_nmsg=
                                formatC(share_nmsg, digits=2))], n=20 )
   
 
-  # dt.stat.new.era[ , cum_nmsg := cumsum(share_nmsg)]
-  #head( dt.stat.new.era[, .(from, cum_nmsg=formatC(cum_nmsg, digits=2))], n=20 )
-  
   print(paste0( "Top 20 by number of chars - from ", last_period_start))
   head( dt.stat.new.era[, .(from, n_chars)][ order(-n_chars)], 20)
   
 
-  # dt.stat.new.era[ , avg_msg_len := n_chars/n_messages]
-  
-  
 
   # Plot - number of messages  
   

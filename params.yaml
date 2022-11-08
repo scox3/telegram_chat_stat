@@ -15,6 +15,9 @@
 filename: Gripsa_221012_result.json
 mindate: 2019-01-01
 
+#separate stat for the last year (number of days)
+lastperiod: 365
+
 #VeloTechno
 #filename: VeloTechno_20220909_result.json
 #mindate: 2021.2.1

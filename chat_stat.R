@@ -140,7 +140,8 @@
 ##
 ###New era
   
-  last_period_start <- dt.data[ , max( min(date(date)), max(date(date))-366)]
+  last_period_start <- dt.data[ , max( min(date(date)), max(date(date))-
+                                         params$lastperiod)]
 
   dt.data.new.era <- dt.data[ date >= last_period_start]
   dt.stat.new.era <- stat_msg_by_user( dt.data.new.era )

@@ -11,7 +11,7 @@ This script requires RStudio
 2. Install necessary packages by running install_libs.R in RStudio (separate installation on RTools may be required).
 
 ## Usage: chat statistics 
-1. Place Telegram chat export file (result.json) in the folder "data/".
+1. Place Telegram chat export file (result.json) in the folder "data/". Rename it as you wish if you have more  of similar files there. 
 2. Place the necessary name in the field "filename" of the parameters file "params.yaml".
 3. Open chat_stat.R in RStudio, then run report generation for it.
 4. The report with be placed in the file "chat_stat.html" with pictures in "chat_stat/files".

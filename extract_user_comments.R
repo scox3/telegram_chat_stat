@@ -12,16 +12,19 @@ source("module1.R")
 
 params <- read_yaml("params.yaml")
 
-json1 <- read_tg_data_file(params$filename)
-
+get_data_path()
 if( is.null(params$mindate)) {
   mindate <- make_date( 2019, 1,1 )
 } else {
-  mindate <-as.Date(params$mindate)
-
+  mindate <- as.Date(params$mindate)
 }
 
+json1 <- read_tg_data_file(params$filename)
+
 dt.data <- tg_data_json2df(json1, mindate)
+
+
+# dt.data <- tg_data_json2df(json1, mindate)
 
 #Username of interest 
 

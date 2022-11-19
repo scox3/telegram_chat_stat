@@ -85,7 +85,7 @@ print( sprintf("Data file: %s", params$filename))
     geom_smooth(aes(color="smooth"))
 
     
-#' ### Chat's avtivity variation by day of the week
+#' ### Chat's activity variation by day of the week
   
 #' #### Averaging multiplicative decomposition   
   lst.dc <- decompose_stat(lst.active)

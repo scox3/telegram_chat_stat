@@ -1,35 +1,13 @@
 #Params: Telegram export of chat data in JSON format
 
-#VeloBaza
-#filename: Velobaza_20220909_result.json
 
 #BitzaMTB
-#filename: BitzaMTB_220821_result.json
-#filename: BitzaMTB_220909_result.json
-#filename: BitzaMTB_220914_photo.result.json
+filename: BitzaMTB_220914_photo.result.json
 
-#Gripsa
-#filename: Gripsa_2022-09-09/result.json
-#filename: Gripsa_220914_result.json
-
-filename: Gripsa_221012_result.json
 mindate: 2019-01-01
 
 #separate stat for the last year (number of days)
 lastperiod: 365
-
-#VeloTechno
-#filename: VeloTechno_20220909_result.json
-#mindate: 2021.2.1
-
-#ButovoChess
-#filename: ButovoChess_20220909_result.json
-
-#Butovo flood
-#filename: ButovoChess_flood_20220918_result.json
-
-#Surron
-#filename: Surron_20220912_result.json
 
 #User name whos comments to extract 
 username: Vlad B

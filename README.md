@@ -7,14 +7,14 @@ This script requires RStudio
 
 
 ## Installation
-1. Copy files, create data subfolder for data
-2. Install necessary packages by running install_libs.R in RStudio (separate installation on RTools may be required).
+1. Copy files, create data subfolder for data Ex. "git clone https://github.com/scox3/telegram_chat_stat"
+2. Install necessary packages by running "source("install_libs.R")" in R/RStudio console (separate installation on RTools may be required).
 
 ## Usage: chat statistics 
 1. Place Telegram chat export file (result.json) in the folder "data/". Rename it as you wish if you have more  of similar files there. 
-2. Place the necessary name in the field "filename" of the parameters file "params.yaml".
-3. Open chat_stat.R in RStudio, then run report generation for it.
-4. The report with be placed in the file "chat_stat.html" with pictures in "chat_stat/files".
+2. Place the name of the data file in the field "filename" of the parameters file "params.yaml".
+3. Run "knitr::spin("chat_stat.R")" i R console prompt.
+4. The report with be placed in the file "chat_stat.html" with pictures in "figures".
 
 ## Usage: export certain user comments, create comments book
 1. Place the user name in the field "username" of the parameters file "params.yaml".

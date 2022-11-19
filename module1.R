@@ -97,6 +97,8 @@ plot_usr_active <- function( lst.active, col_name, ndays, add.smooth = TRUE) {
   gg1 <- ggplot(data=dt1, 
          aes(date, get(col_name), color="data")) +
     geom_path( size=2)+
+    ylab("N. users")+
+    xlab("Date")+
     ggtitle(sprintf("Number of users who posted in chat within %d days", ndays))
   
   if( add.smooth ){

@@ -369,16 +369,16 @@ stat_by_hour <- function(dt.data){
 
 #data file
 
-
-read_tg_data_file <- function(fname1) {
-  library(rprojroot)
+get_data_path <- function(){
   #Find project root folder
   
   global.root.folder <<- rprojroot::is_rstudio_project$find_file()
   filename.data.path <<- paste0(global.root.folder, "/data/")
+}
+
+read_tg_data_file <- function(fname1) {
   
   fname <- paste0( filename.data.path, fname1) 
-  
   #  json1 <- read_json(fname, simplifyDataFrame = TRUE,flatten = TRUE ) 
   json1 <- read_json(fname, simplify = FALSE)
   return(json1)
@@ -386,7 +386,7 @@ read_tg_data_file <- function(fname1) {
 
 tg_data_json2df <- function(json1, mindate){
   dt.data <- create_messages_dt(json1)
-  dt.data <- dt.data[ date > mindate]
+  dt.data <- dt.data[ date >= mindate]
   return(dt.data)  
 }
 

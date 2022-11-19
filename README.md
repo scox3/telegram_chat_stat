@@ -7,7 +7,7 @@ This script requires RStudio
 
 
 ## Installation
-1. Copy files, create data subfolder for data Ex. "git clone https://github.com/scox3/telegram_chat_stat"
+1. Copy files, create data subfolder for data Ex. "git clone https://github.com/scox3/telegram_chat_stat.git"
 2. Install necessary packages by running "source("install_libs.R")" in R/RStudio console (separate installation on RTools may be required).
 
 ## Usage: chat statistics 

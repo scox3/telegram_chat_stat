@@ -1,7 +1,7 @@
 # telegram_chat_stat
 This a script written in R to make some statistical charts based on telegram chat data. 
 Also it can extract certain user comments and make a book from them.
-Statistics include comments numbet dynamics, number of comments by different users and dates, within week and day variation of comments, etc. 
+Statistics include general comments number dynamic, number of comments by different users and dates, within week and day variation of comments, etc. 
 
 This script requires RStudio 
 

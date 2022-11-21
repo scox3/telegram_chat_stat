@@ -20,4 +20,6 @@ This script requires RStudio
 1. Place the user name in the field "username" of the parameters file "params.yaml".
 2. Open extract_user_comments.R in RStudio, then run report generation for it.
 3. Comments with be placed in the files specifield in "params.yaml".
+4. The file photo-list.txt will be created with the list of photo files referenced from the book. Total Commander can be used to select these files in telegram backup (photos/ and files/ folders) and exctract them to some other folder.
+
 

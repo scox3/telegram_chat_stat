@@ -24,7 +24,6 @@
   source("init_libs.R")
   source("module1.R")
   
-
   params <- read_yaml("params.yaml")
   get_data_path()
   if( is.null(params$mindate)) {
@@ -33,9 +32,10 @@
     mindate <- as.Date(params$mindate)
   }
   
-  json1 <- read_tg_data_file(params$filename)
+  dt.data <-load_data_incremental(params)
+#  json1 <- read_tg_data_file(params$filename)
   
-  dt.data <- tg_data_json2df(json1, mindate)
+#  dt.data <- tg_data_json2df(json1, mindate)
   
   
   # The palette with grey:
@@ -123,7 +123,7 @@ print( sprintf("Data file: %s", params$filename))
 
      
 
-  plot_number_of_messages_per_user(dt.stat.messages, dt.data[,min(ddate)])
+  plot_number_of_messages_per_user(head( dt.stat.messages, n=20),dt.data[,min(ddate)])
 
   print("Top 20 flooders")
   
@@ -163,12 +163,11 @@ print( sprintf("Data file: %s", params$filename))
   
   # Plot - number of messages  
   
-  plot_number_of_messages_per_user(dt.stat.new.era, last_period_start)
-
+  plot_number_of_messages_per_user(head( dt.stat.new.era, n=20), last_period_start)
     
   # Plot - number of messages  
   
-  plot_av_length_of_messages_per_user(dt.stat.new.era, last_period_start)
+  plot_av_length_of_messages_per_user(head(dt.stat.new.era, n=20), last_period_start)
   print(paste0( "Top 20 flooders - from ", last_period_start))
   head( dt.stat.new.era[, .(from, n_messages, n_chars, share_nmsg=
                               formatC(share_nmsg, digits=2))], n=20 )

@@ -19,9 +19,10 @@ if( is.null(params$mindate)) {
   mindate <- as.Date(params$mindate)
 }
 
-json1 <- read_tg_data_file(params$filename)
+dt.data <-load_data_incremental(params)
 
-dt.data <- tg_data_json2df(json1, mindate)
+#json1 <- read_tg_data_file(params$filename)
+#dt.data <- tg_data_json2df(json1, mindate)
 
 
 # dt.data <- tg_data_json2df(json1, mindate)
@@ -51,10 +52,4 @@ write.csv( file=params$commentsfilename , dt.user.comments )
 #Make a book
 print_user_comments_html(dt.data, id1, fname.out=params$commentshtmlbook)
 
-
-# "Алаторцев"
-# id1 <- "user139453999"
-# dt.user.comments <- extract_user_comments( dt.data, id1)
-# write.csv( file="Alatortcev-comments.txt" , dt.user.comments )
-# print_user_comments_html(dt.data, id1)
 

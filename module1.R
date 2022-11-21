@@ -92,6 +92,10 @@ stat_lst_active <- function(dt.data)
   
 }
 
+collapse_from_field <- function(from){
+  return( paste(sort(unique(from)), collapse="/"))
+}
+
 plot_usr_active <- function( lst.active, col_name, ndays, add.smooth = TRUE) {
   dt1 <- lst.active$dt.stat
   gg1 <- ggplot(data=dt1, 
@@ -132,7 +136,7 @@ add_message_count_column <- function( lst.active, days_period = 30,
 
 stat_msg_by_user <- function( dt.data ) {
   
-  dt.stat.messages <- dt.data[, .(from=last(from), n_messages= .N, n_chars = sum(nchar(text)), 
+  dt.stat.messages <- dt.data[, .(from=collapse_from_field(from), n_messages= .N, n_chars = sum(nchar(text)), 
                                   fisrt_msg_date=min(as.Date(date)), 
                                   last_msg_date= max(as.Date(date))), by=from_id]
   
@@ -148,15 +152,18 @@ stat_msg_by_user <- function( dt.data ) {
 stat_by_users_by_month <- function( dt.data, ids ) {
   
   dt.stat.by.month1 <- dt.data[ from_id %in% ids, 
-                                .(nmsg=.N, from=first(from), ndays=max(day(ddate))), 
+                                .(nmsg=.N, from=collapse_from_field(from), 
+                                  ndays=max(day(ddate))), 
                                 by=.(from_id, ymonth) ]
   
   dt.stat.by.month2 <- dt.data[ !(from_id %in% ids), 
-                                .(nmsg=.N, from="Others", ndays=max(day(ddate))), 
+                                .(nmsg=.N, from="Others", ndays=max(day(ddate)), 
+                                  from_id="Others"), 
                                 by=.(ymonth)]
   dt.stat.by.month <- rbindlist(list(dt.stat.by.month1[ ,
-                                    c("ymonth","nmsg", "from", "ndays")],
-                                     dt.stat.by.month2 ))
+                                    c("ymonth","nmsg", "from", "from_id", 
+                                      "ndays")],
+                                     dt.stat.by.month2 ), use.names = TRUE)
   setorderv( dt.stat.by.month, c("from", "ymonth"))
   return(dt.stat.by.month)
 }
@@ -168,11 +175,16 @@ stat_by_users_by_month <- function( dt.data, ids ) {
 
 plot_number_of_messages_per_user <- function( dt.stat.new.era, last_period_start){
   
-  dgg_n <- head( dt.stat.new.era[ , .(from, n_messages, n_chars, 
+  # dgg_n <- head( dt.stat.new.era[ , .(from, from_id, n_messages, n_chars, 
+  #                                     share_nmsg=
+  #                                       formatC(share_nmsg, digits=2),
+  #                                     avg_msg_len=floor(avg_msg_len))], n=20 )
+  
+  dgg_n <- dt.stat.new.era[ , .(from, from_id, n_messages, n_chars, 
                                       share_nmsg=
                                         formatC(share_nmsg, digits=2),
-                                      avg_msg_len=floor(avg_msg_len))], n=20 )
-  
+                                      avg_msg_len=floor(avg_msg_len))]
+  dgg_n[ , from:= collapse_from_field(from),by=.(from_id)]
   
   
   dgg_n[ , from := as.factor(from)]
@@ -193,13 +205,17 @@ plot_number_of_messages_per_user <- function( dt.stat.new.era, last_period_start
 
 plot_av_length_of_messages_per_user <- function( dt.stat.new.era, last_period_start){
   
-  dgg_n <- head( dt.stat.new.era[ , .(from, n_messages, n_chars, 
+  # dgg_n <- head( dt.stat.new.era[ , .(from, n_messages, n_chars, 
+  #                                     share_nmsg=
+  #                                       formatC(share_nmsg, digits=2),
+  #                                     avg_msg_len=floor(avg_msg_len))], n=20 )
+  
+  dgg_n <- dt.stat.new.era[ , .(from, from_id, n_messages, n_chars, 
                                       share_nmsg=
                                         formatC(share_nmsg, digits=2),
-                                      avg_msg_len=floor(avg_msg_len))], n=20 )
+                                      avg_msg_len=floor(avg_msg_len))]
   
-  
-  
+  dgg_n[ , from:= collapse_from_field(from),by=.(from_id)]
   dgg_n[ , from := as.factor(from)]
   dgg_n[ , from := fct_reorder(from, avg_msg_len, first, .desc=FALSE)]
   # dgg_n[ , from := fct_reorder(from, avg_msg_len, first, .desc=FALSE)]
@@ -236,9 +252,14 @@ plot_nmsg_by_user_by_month <- function(dt.stat.by.month, last_period_start
   
   mycolors <- colorRampPalette(global.cbbPalette)(nfrom)
   
+  dgg1[ , from:= collapse_from_field(from),by=.(from_id)]
+  
   dgg1[ , tot_messages := sum(nmsg)/ndays, by=.(from)]
+
   dgg1[ , from := as.factor(from)]
   dgg1[ , from := fct_reorder(from, tot_messages, first, .desc=FALSE)]
+  
+  n <- length(unique(dgg1$from))
   
   ggplot( )+
     geom_bar( data=dgg1, 
@@ -247,7 +268,7 @@ plot_nmsg_by_user_by_month <- function(dt.stat.by.month, last_period_start
     scale_fill_manual(  values=mycolors) +
     ylab("N. Messages/month")+
     xlab("Month")+
-    ggtitle( paste0("Number of messages per day (month average) by top ", nfrom, " users since ",
+    ggtitle( paste0("Number of messages per day (month average) by top ", n, " users since ",
                     as.character(last_period_start)))+ 
     labs(color="Legend") + 
     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
@@ -283,7 +304,8 @@ plot_nmsg_by_user_by_month_area <- function(dt.stat.by.month, last_period_start
 
   
   #mycolors <- colorRampPalette(global.cbbPalette)(from)
-
+  dgg1[ , from:= collapse_from_field(from),by=.(from_id)]
+  
   dgg1[ , tot_messages := sum(nmsg), by=.(from)]
   dgg1[ , from := as.factor(from)]
   dgg1[ , from := fct_reorder(from, tot_messages, first, .desc=FALSE)]
@@ -293,12 +315,13 @@ plot_nmsg_by_user_by_month_area <- function(dt.stat.by.month, last_period_start
   dgg1 <- as.data.table( complete(dgg1, date1, from, fill=list(nmsg=0, ndays=1 )))
   
   setorderv( dgg1, cols=c("date1"), order=1)
+  n <- length(unique(dgg1$from))
   
   if( show_share == FALSE ) {
    gg1 <- ggplot( )+
     geom_area( data=dgg1,
               aes(x=date1, y=nmsg/ndays, fill=from),stat="identity") +
-     ggtitle( paste0("Number of messages per day (month average) by top ", nfrom, " users since ",
+     ggtitle( paste0("Number of messages per day (monthly average) by top ", n, " users since ",
                      as.character(last_period_start)))+
      ylab("N. Messages/day")
      
@@ -310,9 +333,9 @@ plot_nmsg_by_user_by_month_area <- function(dt.stat.by.month, last_period_start
     gg1 <- ggplot( )+
       geom_area( data=dgg1,
                  aes(x=date1, y=share_nmsg, fill=from),stat="identity") +
-      ggtitle( paste0("Share of messages per day (month average) by top ", nfrom, " users since ",
+      ggtitle( paste0("Share of monthly messages by top ", n, " users since ",
                       as.character(last_period_start)))+
-      ylab("Share of messages/day")
+      ylab("Share of messages")
   }  
   gg1 <- gg1 +
     scale_fill_manual(  values=mycolors)+
@@ -336,10 +359,13 @@ plot_stat_by_user_by_month <- function( dt.stat.by.month, skip_others = FALSE ) 
   col_list <- unique( dgg1$from)
   col_labels <- col_list
   
+  dgg1[ , from:= collapse_from_field(from),by=.(from_id)]
+  
   dgg1[ , tot_messages := sum(nmsg), by=.(from)]
   dgg1[ , from := as.factor(from)]
   dgg1[ , from := fct_reorder(from, tot_messages, first, .desc=FALSE)]
   
+  n <- length(unique(dgg1$from))
   ggplot( )+
     geom_bar( data=dgg1, 
               aes(x=ymonth, y=nmsg, fill=from),position="stack", 
@@ -347,7 +373,7 @@ plot_stat_by_user_by_month <- function( dt.stat.by.month, skip_others = FALSE ) 
     scale_fill_manual(  values=mycolors) +
     ylab("N. Messages/month")+
     xlab("Month")+
-    ggtitle(paste0("Number of messages per month by top ", nfrom, " users since",
+    ggtitle(paste0("Number of messages per month by top ", n, " users since",
                     as.character(last_period_start)))+ 
     labs(color="Legend") + 
     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
@@ -390,6 +416,125 @@ tg_data_json2df <- function(json1, mindate){
   dt.data <- create_messages_dt(json1)
   dt.data <- dt.data[ date >= mindate]
   return(dt.data)  
+}
+
+
+load_data_incremental <- function(params) {
+  dt.data <- NULL
+  print(params$filename)
+  
+  if( !( length(params$filename) >= 1 )) {
+    stop("No valid filename in params.yaml ")
+  }
+  
+  #  json1 <- read_tg_data_file(params$filename)
+  #} else if( length(params$filename) > 1 ){
+  
+  ffnames_rdata <- str_detect(tolower(params$filename), "\\.rdata$")
+  ffnames_json <- str_detect(tolower(params$filename), "\\.json$")
+  
+  if( sum(ffnames_rdata) > 0 ) {
+    #Read Rdata
+    load( paste0( filename.data.path, 
+                  first(params[["filename"]][ffnames_rdata]) ))
+  }
+  
+  if( sum(ffnames_json) > 0 ) {
+    
+    json1 <- params[["filename"]][ffnames_json] %>% 
+      map( read_tg_data_file)  
+    
+    if( length(json1) >= 1 ) {
+      # dt.data.json <-  json1 %>%
+      #   map( ~ tg_data_json2df(.x, mindate)) %>%
+      #   rbindlist
+      
+      dt.data.json <-  seq_along(json1) %>%
+        map( ~ tg_data_json2df(json1[[.x]], mindate)[, iset:= .x]) %>%
+        rbindlist
+      
+      if( !is.null(dt.data)){
+        dt.data[ , iset:=0 ]
+        dt.data <- rbindlist(list(dt.data, dt.data.json))
+      } else {
+        dt.data <-dt.data.json
+      }
+      
+      dt2 <- unique(dt.data, by = c("date", "type", "from_id", "text", "file", "photo"))
+      
+      #      View(dt2[ date %in% dt2[ , .N,by=.(date, type, from_id, text)][ N>1, date]])
+      
+      dt2[ , c("group_size", "group_id") := .(.N, .GRP),
+           by=.(date, type, from_id, text)]
+      
+      #version
+      #dt2[ , group_nphotos := sum(str_detect(photo.col, "^photo")), by = .(group_id)]
+      
+      
+      # Note: when  (photo,file) is ("", "(File)") or ("(File)", "")
+      # this may generate spurious duplicates - but does not affect the 
+      # final cleaning 
+      cat("Number of probable groups of duplicates:", 
+          dt2[ group_size > 1, length(unique(group_id))])
+      
+      #      View(dt2[ (group_size > 1) & nchar(text)>0])
+      #      View(dt2[ group_size > 1])
+      
+      dt2[ , del_flag := 0 ]
+      
+      del_doubles<- function( photo.col, file.col, iset.col ) {
+        res <- rep(0, length(photo.col))
+        fphoto <- str_detect(photo.col, "^photo")
+        fnonphoto <- str_detect(photo.col, "^\\(File")
+        
+        if( sum(fphoto) > 0 & sum(fnonphoto) > 0 )  {
+          
+          #Expected data structure: if photos are exported, their number for 
+          # the group is >=1. If not exported than the number of "(File"
+          # messages is exactly 1
+          # photo file names are determited by post datetime and are unique 
+          # so there is no need to worry about duplicated photos, only missed ones
+          iset_with_photos <- first( iset.col[fphoto])  
+          res[fnonphoto & (iset.col!=iset_with_photos)] <- 1
+        }
+        
+        ffile <- str_detect(file.col, "^files/")
+        fnonfile <- str_detect(file.col, "^\\(File")
+        
+        if( sum(ffile) > 0  & sum(fnonfile)>0) {
+          iset_with_files <- first( iset.col[ffile])  
+          
+          res[fnonfile & (iset.col!=iset_with_files)] <- 1
+        }
+        res
+      }
+      
+      dt2[ group_size > 1, del_flag := del_doubles(photo, file, iset), 
+           by=.(group_id)]
+      
+      dt3 <- dt2[del_flag ==  0]
+      dt3[ , c("iset", "del_flag", "group_size", "group_id") := 
+             list(NULL,NULL,NULL, NULL)]
+      
+      dt.data <- dt3
+      setorderv(dt.data, c("date"))
+      
+      if( !is.null(params$save.update)){
+        if( is.null(params$update.filename.template)){
+          fn1 <- "updated-data-"
+        } else {
+          fn1 <- params$update.filename.template
+        }
+        save( dt.data, file=paste0(fn1, dt.data[, as.Date(min(date))], "_",
+                                   dt.data[, as.Date(max(date))],
+                                   ".RData"))
+      }
+      
+    } else {
+      stop("Err reading input data")
+    }
+  } 
+  return(dt.data)
 }
 
 

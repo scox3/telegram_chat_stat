@@ -1,22 +1,40 @@
 #Params: Telegram export of chat data in JSON format
 
 
-#BitzaMTB
-filename: BitzaMTB_220914_photo.result.json
+#chat: BitzaMTB
 
+#Template 1: Uncomment a row to use a single Telegram backup file
+#filename: BitzaMTB_220821_result.json
+#filename: BitzaMTB_220909_result.json
+#filename: BitzaMTB_220914_photo.result.json
+
+#Setup2: Uncomment rows to merge several Telegram backup files
+# filename:
+#   - BitzaMTB_220821_result.json
+#   - BitzaMTB_220909_result.json
+#   - BitzaMTB_220914_photo.result.json
+
+#Setup3: Uncomment to merge RData and incremental Telegram backup file(s)
+# filename:
+#   - BitzaMTB_2019-09-25_2022-09-14.RData
+#   - BitzaMTB_220914_photo.result.json
+
+#Use only data later than
 mindate: 2019-01-01
 
-#separate stat for the last year (number of days)
+#New era (number of days backward)
 lastperiod: 365
 
-#User name whos comments to extract 
-username: Vlad B
+#Save database to the file
+save.update: TRUE
+update.filename.template: BitzaMTB_
 
-#set to nonzero to use userid otherwise user will be searched by username  
+#Userid of user whos comments to extract or 0
 userid: 0
+
+#If userid==0 place here the name of user whos comments to extract
+username: Vlad
 
 #File where to put extracted user comments
 commentsfilename: user-comments.txt
 commentshtmlbook: user-comments.html
-
-

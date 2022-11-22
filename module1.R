@@ -96,21 +96,44 @@ collapse_from_field <- function(from){
   return( paste(sort(unique(from)), collapse="/"))
 }
 
-plot_usr_active <- function( lst.active, col_name, ndays, add.smooth = TRUE) {
+plot_usr_active <- function( lst.active, col_name, 
+                             ndays, add.smooth = TRUE) {
   dt1 <- lst.active$dt.stat
   gg1 <- ggplot(data=dt1, 
-         aes(date, get(col_name), color="data")) +
-    geom_path( size=2)+
+         aes(date, get(col_name), color="Data")) +
+    geom_path( size=2 )+
     ylab("N. users")+
     xlab("Date")+
+    labs(color="Color")+
     ggtitle(sprintf("Number of users who posted in chat within %d days", ndays))
   
   if( add.smooth ){
     gg1 <- gg1 +
-      geom_smooth(aes(color="smooth"))
+      geom_smooth(aes(color="Smooth"))
   }
   return(gg1)
 }
+
+
+plot_nmsg <- function( lst.active, col_name, 
+                             ndays, add.smooth = TRUE, 
+                       title= "Number of messages within %d days") {
+  dt1 <- lst.active$dt.stat
+  gg1 <- ggplot(data=dt1, 
+                aes(date, get(col_name), color="Data")) +
+    geom_path( size=2 )+
+    ylab("N. messages")+
+    xlab("Date")+
+    labs(color="Color")+
+    ggtitle(sprintf(title, ndays))
+
+  if( add.smooth ){
+    gg1 <- gg1 +
+      geom_smooth(aes(color="Smooth"))
+  }
+  return(gg1)
+}
+
 
 add_message_count_column <- function( lst.active, days_period = 30, 
                                       col_name = "n_msg30"){

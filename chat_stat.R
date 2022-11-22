@@ -56,7 +56,7 @@ print( sprintf("Data file: %s", params$filename))
 #' ### Chat's active users  
   lst.active <- stat_lst_active(dt.data)
   
-  plot_usr_active( lst.active, "n_active30", 30, add.smooth = FALSE)
+  plot_usr_active( lst.active, "n_active30", 30)
   plot_usr_active( lst.active, "n_active60", 60, add.smooth = FALSE)
   plot_usr_active( lst.active, "n_active7", 7)
   plot_usr_active( lst.active, "n_active1", 1)
@@ -64,25 +64,24 @@ print( sprintf("Data file: %s", params$filename))
 
 #' ### Number of messages in the chat 
   
-  ggplot(lst.active$dt.stat, aes(date, n_msg30, color="data")) +
-    geom_path(size=2)+
-    ggtitle("Number of messages within 30 days")
-  #+    geom_smooth(aes(color="smooth"))
+
+  plot_nmsg( lst.active, "n_msg30", 30, add.smooth = FALSE)
+  plot_nmsg( lst.active, "n_msg30_per_day", 30, add.smooth = FALSE,
+             title="Average number of messages per day within %s days")
+
+  lst.active$dt.stat[ ,n_msg30_per_active_usr := n_msg30/n_active30 ]  
+  plot_nmsg( lst.active, "n_msg30_per_active_usr", 30, add.smooth = FALSE,
+             title="Number of messages within %s days per active user")
+
+  plot_nmsg( lst.active, "n_msg1", 1, add.smooth = TRUE,
+             title="Number of messages within 1 days")
   
-  ggplot(lst.active$dt.stat, aes(date, n_msg30_per_day, color="data")) +
-    geom_path(size=2)+
-    ggtitle("Average number of messages per day within 30 days")
-  #+    geom_smooth(aes(color="smooth"))
-  
-  ggplot(lst.active$dt.stat, aes(date, n_msg30/n_active30, color="data")) +
-    geom_path(size=2)+
-    ggtitle("Number of messages within 30 days per active user")
-  
-  
-  ggplot(lst.active$dt.stat, aes(date, n_msg1, color="data")) +
-    geom_path(size=2)+
-    ggtitle("Number of messages within 1 days")+
-    geom_smooth(aes(color="smooth"))
+
+  # ggplot(lst.active$dt.stat, aes(date, n_msg1, color="Data")) +
+  #   geom_path(size=2)+
+  #   ggtitle("Number of messages within 1 days")+
+  #   geom_smooth(aes(color="Smooth"))+
+  #   labs(color="Legend")
 
     
 #' ### Chat's activity variation by day of the week
